@@ -1,6 +1,12 @@
-/* html,
 body {
-	height: 100%;
-	overflow: hidden;
-	background-color: pink;
-} */
+	background: #202028;
+	color: #fff;
+	font-family: sans-serif;
+	font-size: 2em;
+	text-align: center;
+}
+
+canvas {
+	border: solid .2em #fff;
+	height: 60vh;
+}
