@@ -7,8 +7,6 @@ const playerElements = document.querySelectorAll('.player');
 	tetri.push(tetris);
 });
 
-// console.log(playerElements);
-
 const keyListener = event => {
 	[
 		[65, 68, 81, 69, 83],
@@ -45,7 +43,6 @@ const keyListener = event => {
 
 document.addEventListener('keydown', keyListener);
 document.addEventListener('keyup', keyListener);
-
 
 window.addEventListener("keydown", function(e) {
     // space and arrow keys
