@@ -3,7 +3,9 @@ class Client{
 		this.conn = conn;
 		this.session = null;
 	}
-	send(msg){
+	
+	send(data){
+		const msg = JSON.stringify(data);
 		console.log(`[server] Sending message ${msg}`);
 		this.conn.send(msg, function ack(err){
 			if(err){
