@@ -5,8 +5,13 @@ class Arena{
 			matrix.push(new Array(w).fill(0));
 		}
 		this.matrix = matrix;
+		this.events = new Events;
 	}
 
+	clear(){
+		this.matrix.forEach(row => row.fill(0));
+		this.events.emit('matrix', this.matrix);
+	}
 
 	collide(player){
 		const [m, o] = [player.matrix, player.pos];
@@ -29,7 +34,8 @@ class Arena{
 					this.matrix[y + player.pos.y][x + player.pos.x] = value;
 				}
 			})
-		})
+		});
+		this.events.emit('matrix', this.matrix);
 	}
 
 	sweep(){
@@ -49,9 +55,7 @@ class Arena{
 			score += rowCount * 10;
 			rowCount *= 2;
 		}
+		this.events.emit('matrix', this.matrix);
 		return score;
-	}
-	clear(){
-		this.matrix.forEach(row => row.fill(0));
 	}
 }

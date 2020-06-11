@@ -1,9 +1,10 @@
 class Client{
-	constructor(conn){
+	constructor(conn, id){
 		this.conn = conn;
+		this.id = id;
 		this.session = null;
 	}
-	
+
 	send(data){
 		const msg = JSON.stringify(data);
 		console.log(`[server] Sending message ${msg}`);
