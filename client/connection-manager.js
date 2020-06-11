@@ -23,13 +23,19 @@ class ConnectionManager{
 
 	initSession(){
 		const sessionId = window.location.hash.split('#')[1];
+		const state = this.localTetris.serialize();
+
 		if(sessionId){
 			this.send({
 				type: 'join-session',
 				id: sessionId,
+				state
 			});
 		} else {
-			this.send({type: 'create-session'});
+			this.send({
+				type: 'create-session', 
+				state
+			});
 		}   
 	}
 
@@ -39,31 +45,34 @@ class ConnectionManager{
 			window.location.hash = data.id;
 		} else if(data.type === 'session-broadcast') {
 			this.updateManager(data.peers);
+		} else if(data.type === 'state-update'){
+			this.updatePeer(data.clientId, data.fragment, data.state);
 		}
 	}
 
 	watchEvents(){
 		const local = this.localTetris;
 		const player = local.player;
-
 		['pos', 'matrix', 'score'].forEach(prop => {
 			player.events.listen(prop, (value) => {
 				this.send({
 					type: 'state-update',
 					fragment: 'player',
-					player: [prop, value],
+					state: [prop, value],
 				});
 			});
 		});
 
-		// this.player.events.listen('pos', pos => {
-		// 	console.log(`Player pos changed to, `, pos);
-		// });
-
-		// this.player.events.listen('matrix', matrix => {
-		// 	console.log(`Player matrix changed to, `, matrix);
-		// });
-
+		const arena = local.arena;
+		['matrix'].forEach(prop => {
+			arena.events.listen(prop, (value) => {
+				this.send({
+					type: 'state-update',
+					fragment: 'arena',
+					state: [prop, value],
+				});
+			});
+		});
 	}
 
 	updateManager(peers){
@@ -82,6 +91,21 @@ class ConnectionManager{
 				this.peers.delete(id);
 			}
 		});
+	}
+
+	updatePeer(id, fragment, [prop, value]){
+		if(!this.peers.has(id)){
+			console.error(`Client doesn't exist, `, id);
+			return;
+		}
+		const tetris = this.peers.get(id);
+		tetris[fragment][prop] = value;
+
+		if(prop === 'score'){
+			tetris.updateScore(value);
+		} else {
+			tetris.draw();
+		}
 	}
 
 	send(data){
